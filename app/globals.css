@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-kts-bg: var(--bg);
+  --color-kts-bg2: var(--bg-2);
+  --color-kts-surface: var(--surface);
+  --color-kts-surface2: var(--surface-2);
+  --color-kts-accent: var(--accent);
+  --color-kts-accent2: var(--accent-2);
+  --color-kts-text: var(--text);
+  --color-kts-muted: var(--muted);
+  --color-kts-line: var(--line);
+  --color-kts-btn-text: var(--btn-primary-text);
+
+  --font-ui: var(--font-inter);
+  --font-editorial: var(--font-playfair);
+}
+
+@layer base {
+  :root {
+    --bg: #FFFAF4;
+    --bg-2: #F4ECE2;
+    --surface: #FFFFFF;
+    --surface-2: #EADFD2;
+    --accent: #B88B61;
+    --accent-2: #7C5F4C;
+    --text: #1E1A16;
+    --muted: rgba(30, 26, 22, 0.58);
+    --line: rgba(54, 39, 30, 0.10);
+    --btn-primary-text: #FFFAF4;
+  }
+
+  .dark {
+    --bg: #0F0C0A;
+    --bg-2: #17110F;
+    --surface: #261B16;
+    --surface-2: #3A2A22;
+    --accent: #D7B78D;
+    --accent-2: #F0DFC8;
+    --text: #F8F1E8;
+    --muted: rgba(248, 241, 232, 0.58);
+    --line: rgba(240, 220, 196, 0.15);
+    --btn-primary-text: #17110F;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
