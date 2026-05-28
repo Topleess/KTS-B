@@ -1,0 +1,6 @@
+{
+  "name": "KTS Beauty",
+  "description": "Premium AI Skincare Assistant Prototype",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
