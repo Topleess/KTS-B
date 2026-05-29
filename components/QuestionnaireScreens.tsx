@@ -35,7 +35,9 @@ function WizardLayout({
 }) {
   const pct = (step / total) * 100;
   const footerRef = React.useRef<HTMLDivElement>(null);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
   const [footerHeight, setFooterHeight] = React.useState(76);
+  const [topFadeOpacity, setTopFadeOpacity] = React.useState(0);
 
   React.useEffect(() => {
     if (!footerRef.current) return;
@@ -52,6 +54,15 @@ function WizardLayout({
       window.removeEventListener("resize", update);
     };
   }, []);
+
+  const handleScroll = React.useCallback(() => {
+    const scrollTop = scrollRef.current?.scrollTop || 0;
+    setTopFadeOpacity(Math.min(1, scrollTop / 22));
+  }, []);
+
+  React.useEffect(() => {
+    handleScroll();
+  }, [step, handleScroll]);
 
   return (
     <div className="flex-1 min-h-0 flex flex-col pt-2 bg-transparent overflow-hidden">
@@ -72,12 +83,17 @@ function WizardLayout({
       </div>
 
       <div className="flex-1 min-h-0 px-6 z-0 relative" style={{ paddingBottom: `${footerHeight + 24}px` }}>
-        <div className="pointer-events-none absolute inset-x-6 top-0 z-20 h-10 bg-gradient-to-b from-[#0A0807]/92 via-[#0A0807]/68 to-transparent backdrop-blur-[11px]" />
         <div
+          className="pointer-events-none absolute inset-x-6 top-0 z-20 h-8 bg-gradient-to-b from-[#0A0807]/90 via-[#0A0807]/42 to-transparent backdrop-blur-[8px] transition-opacity duration-150"
+          style={{ opacity: topFadeOpacity }}
+        />
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
           className="relative z-10 h-full min-h-0 overflow-y-auto hide-scrollbar pt-2 pr-0.5"
           style={{
-            WebkitMaskImage: `linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.58) 10px, rgba(0,0,0,0.92) 24px, black 38px, black calc(100% - ${Math.max(10, footerHeight - 8)}px), transparent 100%)`,
-            maskImage: `linear-gradient(to bottom, transparent 0px, rgba(0,0,0,0.58) 10px, rgba(0,0,0,0.92) 24px, black 38px, black calc(100% - ${Math.max(10, footerHeight - 8)}px), transparent 100%)`,
+            WebkitMaskImage: `linear-gradient(to bottom, black 0px, black calc(100% - ${Math.max(10, footerHeight - 8)}px), transparent 100%)`,
+            maskImage: `linear-gradient(to bottom, black 0px, black calc(100% - ${Math.max(10, footerHeight - 8)}px), transparent 100%)`,
           }}
         >
           {children}
