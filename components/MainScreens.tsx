@@ -1,4 +1,7 @@
 "use client";
+// Legacy prototype screens. The active internal app implementation lives in InternalApp.tsx.
+// Keep this file out of feature work unless it is deliberately revived or removed.
+
 import * as React from "react";
 import { BottomNav, Button, GlassCard } from "./UI";
 

@@ -70,8 +70,18 @@ const onboardingSlides = [
   },
 ] as const;
 
-export function OnboardingCarousel({ onNext, onSkip, onBack }: { onNext: () => void; onSkip: () => void; onBack: () => void }) {
-  const [idx, setIdx] = React.useState(0);
+export function OnboardingCarousel({
+  initialSlide = "first",
+  onNext,
+  onSkip,
+  onBack,
+}: {
+  initialSlide?: "first" | "last";
+  onNext: () => void;
+  onSkip: () => void;
+  onBack: () => void;
+}) {
+  const [idx, setIdx] = React.useState(() => initialSlide === "last" ? onboardingSlides.length - 1 : 0);
   const [segmentProgress, setSegmentProgress] = React.useState(0);
   const slide = onboardingSlides[idx];
 

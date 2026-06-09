@@ -5,28 +5,6 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Sparkles, Scan, LayoutGrid, User, ChevronLeft } from "lucide-react";
 
-export type AppAnswers = {
-  category: string[];
-  focus: string[];
-  skinType: string;
-  restrictions: { sensitivity: Record<string, boolean>; exclude: string[] };
-  age: string;
-  experience: string;
-  budget: string;
-  stores: string[];
-};
-
-export const defaultAnswers: AppAnswers = {
-  category: [],
-  focus: [],
-  skinType: '',
-  restrictions: { sensitivity: {}, exclude: [] },
-  age: '',
-  experience: '',
-  budget: '',
-  stores: [],
-};
-
 export function Button({ 
   variant = 'primary', 
   className, 
@@ -40,22 +18,38 @@ export function Button({
   onClick?: () => void,
   disabled?: boolean
 }) {
-  const base = "h-[50px] px-6 rounded-full font-medium transition-all flex items-center justify-center text-[14px] select-none";
+  const base = "h-12 px-5 rounded-[16px] font-medium transition-all flex items-center justify-center text-[14px] select-none outline-none focus-visible:ring-2 focus-visible:ring-kts-accent/60 active:scale-[0.98]";
   const variants = {
     primary: disabled 
       ? "bg-gradient-to-b from-white/8 to-white/2 text-kts-muted border border-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] cursor-not-allowed opacity-70" 
-      : "bg-gradient-to-br from-kts-accent to-kts-accent2 text-kts-btn-text shadow-lg shadow-kts-accent/10 active:scale-[0.98] cursor-pointer",
+      : "bg-kts-accent text-kts-btn-text shadow-sm cursor-pointer",
     secondary: disabled 
       ? "bg-kts-surface/30 text-kts-muted border border-kts-line/40 cursor-not-allowed" 
-      : "bg-transparent text-kts-text border border-kts-line hover:bg-kts-surface/30 active:scale-[0.98] cursor-pointer",
+      : "bg-kts-surface/70 text-kts-text border border-kts-line hover:bg-kts-surface cursor-pointer",
     ghost: disabled
       ? "text-kts-muted/40 cursor-not-allowed"
-      : "bg-kts-surface/10 text-kts-muted hover:text-kts-text active:scale-[0.98] cursor-pointer",
+      : "bg-transparent text-kts-muted hover:text-kts-text cursor-pointer",
   };
   return (
     <button onClick={disabled ? undefined : onClick} disabled={disabled} className={cn(base, variants[variant], className)}>
       {children}
     </button>
+  );
+}
+
+export function SurfaceCard({
+  children,
+  className,
+  as: Comp = "div",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  as?: React.ElementType;
+}) {
+  return (
+    <Comp className={cn("rounded-[18px] border border-kts-line bg-kts-surface/78 shadow-sm", className)}>
+      {children}
+    </Comp>
   );
 }
 
@@ -79,7 +73,26 @@ export function GlassCard({
   );
 }
 
-export function BlurCTAFooter({
+export function ScreenScaffold({
+  children,
+  className,
+  bottomInset = "var(--screen-bottom)",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  bottomInset?: string;
+}) {
+  return (
+    <div
+      className={cn("min-h-full px-[var(--screen-x)] pt-[var(--screen-top)]", className)}
+      style={{ paddingBottom: bottomInset }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function FixedActionBar({
   children,
   className,
   contentRef,
@@ -90,12 +103,10 @@ export function BlurCTAFooter({
 }) {
   return (
     <>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[156px] w-full">
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0807]/88 via-[#0A0807]/42 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-white/[0.04] via-transparent to-transparent" />
-        <div className="absolute inset-0 backdrop-blur-[7px] [mask-image:linear-gradient(to_top,black_40%,transparent)]" />
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[120px] w-full">
+        <div className="absolute inset-0 bg-gradient-to-t from-kts-bg via-kts-bg/84 to-transparent" />
       </div>
-      <div className={cn("pointer-events-none absolute bottom-0 left-0 z-20 w-full px-6 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]", className)}>
+      <div className={cn("pointer-events-none absolute bottom-0 left-0 z-20 w-full px-[var(--screen-x)] pb-[calc(14px+var(--safe-bottom))] pt-3", className)}>
         <div ref={contentRef} className="pointer-events-auto mx-auto flex w-full max-w-[430px] gap-3">
           {children}
         </div>
@@ -104,14 +115,16 @@ export function BlurCTAFooter({
   );
 }
 
+export const BlurCTAFooter = FixedActionBar;
+
 export function IconButton({ onClick, icon, disabled }: { onClick?: () => void, icon?: React.ReactNode, disabled?: boolean }) {
   return (
     <button 
       onClick={disabled ? undefined : onClick} 
       disabled={disabled}
       className={cn(
-        "w-[50px] h-[50px] shrink-0 rounded-full flex items-center justify-center border transition-all backdrop-blur-xl",
-        disabled ? "border-white/5 text-white/25 bg-white/[0.03] cursor-not-allowed" : "border-white/10 bg-white/[0.07] text-white hover:bg-white/10 active:scale-95 cursor-pointer"
+        "h-12 w-12 shrink-0 rounded-[16px] flex items-center justify-center border transition-all outline-none focus-visible:ring-2 focus-visible:ring-kts-accent/60 active:scale-95",
+        disabled ? "border-kts-line text-kts-muted/35 bg-kts-surface/30 cursor-not-allowed" : "border-kts-line bg-kts-surface/70 text-kts-text hover:bg-kts-surface cursor-pointer"
       )}
     >
       {icon || <ChevronLeft className="w-5 h-5 -ml-0.5" />}
@@ -133,23 +146,26 @@ export function OptionCard({
   icon?: React.ReactNode
 }) {
   return (
-    <div 
+    <button
+      type="button"
       onClick={onClick} 
       className={cn(
-        "p-[16px] rounded-[24px] border transition-all cursor-pointer select-none flex flex-row items-center gap-3 relative overflow-hidden backdrop-blur-xl",
+        "w-full p-4 rounded-[18px] border transition-all cursor-pointer select-none flex flex-row items-center gap-3 relative overflow-hidden text-left outline-none focus-visible:ring-2 focus-visible:ring-kts-accent/60 active:scale-[0.99]",
         selected 
-          ? "bg-white/[0.13] border-white/25 shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),0_12px_34px_rgba(0,0,0,0.16)]" 
-          : "bg-white/[0.055] border-white/8 hover:border-white/15 hover:bg-white/[0.08] shadow-[inset_0_1px_1px_rgba(255,255,255,0.06)]"
+          ? "bg-kts-accent text-kts-btn-text border-kts-accent shadow-sm" 
+          : "bg-kts-surface/72 border-kts-line hover:bg-kts-surface"
       )}
     >
       <div className="flex-1 flex flex-col z-10">
-        <h4 className="text-[16px] font-medium tracking-tight mb-0.5 text-kts-text">{title}</h4>
-        {desc && <p className="text-[13px] text-kts-muted leading-tight">{desc}</p>}
+        <h4 className={cn("text-[16px] font-medium mb-0.5", selected ? "text-kts-btn-text" : "text-kts-text")}>{title}</h4>
+        {desc && <p className={cn("text-[13px] leading-tight", selected ? "text-kts-btn-text/75" : "text-kts-muted")}>{desc}</p>}
       </div>
-      {icon && <div className="text-kts-muted shrink-0 mr-1">{icon}</div>}
-    </div>
+      {icon && <div className={cn("shrink-0 mr-1", selected ? "text-kts-btn-text/80" : "text-kts-muted")}>{icon}</div>}
+    </button>
   );
 }
+
+export const SelectionCard = OptionCard;
 
 export function Chip({ 
   label, 
@@ -161,19 +177,22 @@ export function Chip({
   onClick?: () => void 
 }) {
   return (
-    <div 
+    <button
+      type="button"
       onClick={onClick}
       className={cn(
-        "h-8 px-4 inline-flex items-center gap-1.5 rounded-full border text-[13px] mb-1 font-medium whitespace-nowrap cursor-pointer select-none transition-colors backdrop-blur-md",
+        "h-9 px-4 inline-flex items-center gap-1.5 rounded-full border text-[13px] mb-1 font-medium whitespace-nowrap cursor-pointer select-none transition-colors outline-none focus-visible:ring-2 focus-visible:ring-kts-accent/60",
         selected 
-          ? "bg-white/10 border-white/20 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]" 
-          : "bg-[#18181A]/40 border-white/5 text-kts-muted hover:text-white hover:border-white/10 hover:bg-white/5"
+          ? "bg-kts-accent border-kts-accent text-kts-btn-text" 
+          : "bg-kts-surface/72 border-kts-line text-kts-muted hover:text-kts-text hover:bg-kts-surface"
       )}
     >
       {label}
-    </div>
+    </button>
   );
 }
+
+export const SelectionChip = Chip;
 
 export function RetailerChip({ 
   label, 
@@ -189,13 +208,14 @@ export function RetailerChip({
   onClick: () => void 
 }) {
   return (
-    <div 
+    <button
+      type="button"
       onClick={onClick}
       className={cn(
-        "h-11 px-3.5 inline-flex items-center gap-2 rounded-[16px] border text-[13px] font-medium whitespace-nowrap cursor-pointer select-none transition-all backdrop-blur-xl",
+        "h-11 px-3.5 inline-flex items-center gap-2 rounded-[16px] border text-[13px] font-medium whitespace-nowrap cursor-pointer select-none transition-all outline-none focus-visible:ring-2 focus-visible:ring-kts-accent/60",
         selected 
-          ? "bg-white/[0.14] border-white/25 text-white shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),0_0_18px_rgba(255,255,255,0.06)]" 
-          : "bg-white/[0.055] border-white/8 text-kts-muted hover:text-white hover:border-white/15 hover:bg-white/[0.08]"
+          ? "bg-kts-accent border-kts-accent text-kts-btn-text" 
+          : "bg-kts-surface/72 border-kts-line text-kts-muted hover:text-kts-text hover:bg-kts-surface"
       )}
     >
       {imageSrc ? (
@@ -204,7 +224,7 @@ export function RetailerChip({
         </span>
       ) : icon && <div className="w-5 h-5 flex items-center justify-center shrink-0">{icon}</div>}
       {label}
-    </div>
+    </button>
   );
 }
 
@@ -260,15 +280,15 @@ export function BottomNav({
   onNavigate: (id: string) => void 
 }) {
   const items = [
-    { id: 'routine', label: 'Рутина', icon: Sparkles },
+    { id: 'routine', label: 'Уход', icon: Sparkles },
     { id: 'scan', label: 'Скан', icon: Scan },
     { id: 'catalog', label: 'Каталог', icon: LayoutGrid },
     { id: 'profile', label: 'Профиль', icon: User },
   ];
 
   return (
-    <div className="absolute bottom-6 left-0 w-full px-4 z-50 pointer-events-none pb-[env(safe-area-inset-bottom)]">
-      <nav className="mx-auto max-w-[400px] pointer-events-auto flex justify-between items-center bg-white/[0.10] backdrop-blur-2xl border border-white/20 rounded-full px-2 py-2 shadow-[0_24px_48px_rgba(0,0,0,0.26),inset_0_1px_0_rgba(255,255,255,0.22)]">
+    <div className="absolute bottom-0 left-0 z-50 w-full pb-[calc(10px+var(--safe-bottom))] pointer-events-none">
+      <nav className="mx-[72px] mt-1.5 h-[var(--bottom-nav-height)] pointer-events-auto flex justify-between items-center rounded-full border border-kts-accent/22 bg-kts-surface/82 px-[5px] py-[9px] shadow-[0_14px_32px_rgba(0,0,0,0.16)] backdrop-blur-xl">
         {items.map((item) => {
           const active = current === item.id;
           return (
@@ -276,13 +296,13 @@ export function BottomNav({
               key={item.id}
               onClick={() => onNavigate(item.id)}
               className={cn(
-                "flex flex-col items-center justify-center w-14 h-12 rounded-full transition-all duration-300 relative",
-                active ? "text-white" : "text-white/40 hover:text-white/80"
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300",
+                active ? "text-kts-btn-text" : "text-kts-muted hover:text-kts-text"
               )}
             >
-              {active && <div className="absolute inset-0 bg-white/10 rounded-full shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]" />}
-              <item.icon className={cn("w-[22px] h-[22px] z-10 transition-all", active ? "stroke-[2px] -translate-y-0.5" : "stroke-[1.5]")} />
-              {active && <span className="absolute bottom-1 text-[9px] font-medium tracking-wide z-10 opacity-80">{item.label}</span>}
+              {active && <div className="absolute inset-0 rounded-full bg-kts-accent shadow-sm" />}
+              <item.icon className={cn("z-10 h-[21px] w-[21px] transition-all", active ? "stroke-[2px]" : "stroke-[1.45]")} />
+              <span className="sr-only">{item.label}</span>
             </button>
           );
         })}

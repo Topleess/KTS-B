@@ -2,13 +2,17 @@ export type AppTab = "routine" | "scan" | "catalog" | "profile";
 
 export type AppScreen =
   | "main"
+  | "routineFlow"
   | "routineStep"
   | "replaceProduct"
   | "productDetail"
   | "priceCompare"
   | "inciResult"
   | "myProducts"
-  | "skinDynamics";
+  | "skinDynamics"
+  | "weatherDay"
+  | "locationPicker"
+  | "skinCheck";
 
 export type Product = {
   id: string;

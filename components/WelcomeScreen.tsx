@@ -1,14 +1,15 @@
 "use client";
 import * as React from "react";
-import { motion } from "motion/react";
+import { motion, useAnimationControls } from "motion/react";
 import Link from "next/link";
 
 export function WelcomeScreen({ onNext }: { onNext: () => void }) {
   const [trackWidth, setTrackWidth] = React.useState(0);
   const [done, setDone] = React.useState(false);
+  const knobControls = useAnimationControls();
   const trackRef = React.useRef<HTMLDivElement>(null);
   const knobSize = 52;
-  const padding = 12;
+  const trackPadding = 6;
 
   React.useEffect(() => {
     if (trackRef.current) {
@@ -23,7 +24,13 @@ export function WelcomeScreen({ onNext }: { onNext: () => void }) {
     return () => observer.disconnect();
   }, []);
 
-  const rightConstrain = trackWidth > 0 ? trackWidth - knobSize - padding * 2 : 228;
+  const rightConstrain = trackWidth > 0 ? Math.max(0, trackWidth - knobSize - trackPadding * 2) : 288;
+  const snapBack = () => {
+    void knobControls.start({
+      x: 0,
+      transition: { type: "spring", stiffness: 520, damping: 34, mass: 0.85 },
+    });
+  };
 
   return (
     <div className="flex-1 flex flex-col text-[#fff6ef] p-6 relative z-0 h-full">
@@ -44,22 +51,34 @@ export function WelcomeScreen({ onNext }: { onNext: () => void }) {
 
       <div 
         ref={trackRef}
-        className="w-full h-[64px] rounded-full border border-white/10 bg-white/[0.03] flex items-center p-1.5 backdrop-blur-md mt-auto relative overflow-hidden mb-5 shadow-lg"
+        className="w-full h-[64px] rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md mt-auto relative overflow-hidden mb-5 shadow-lg"
       >
-         <span className="absolute w-full text-center text-white/40 font-medium tracking-wide z-0 pointer-events-none text-[14px]">Проведи, чтобы начать</span>
+         <span className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center text-[14px] font-medium tracking-wide text-white/42">
+           <span className="animate-slider-hint">
+             Проведи, чтобы начать
+           </span>
+         </span>
          <motion.div
            drag="x"
            dragConstraints={{ left: 0, right: rightConstrain }}
            dragElastic={0}
-           animate={{ x: done ? rightConstrain : 0 }}
-           transition={{ duration: done ? 0.22 : 0, ease: "easeOut" }}
+           dragMomentum={false}
+           animate={knobControls}
+           initial={{ x: 0 }}
            onDragEnd={(e, info) => {
-             if (info.offset.x >= rightConstrain * 0.72) {
+             if (info.offset.x >= rightConstrain * 0.82) {
                setDone(true);
+               void knobControls.start({
+                 x: rightConstrain,
+                 transition: { duration: 0.18, ease: "easeOut" },
+               });
                window.setTimeout(() => onNext(), 180);
+               return;
              }
+             setDone(false);
+             snapBack();
            }}
-           className="w-[52px] h-[52px] bg-[#f5e9dd] rounded-full flex items-center justify-center text-[#201713] shadow-[0_4px_16px_rgba(0,0,0,0.3)] z-10 cursor-grab active:cursor-grabbing text-xl font-light"
+           className="absolute left-1.5 top-1/2 z-10 flex h-[52px] w-[52px] -translate-y-1/2 cursor-grab items-center justify-center rounded-full bg-[#f5e9dd] text-xl font-light text-[#201713] shadow-[0_4px_16px_rgba(0,0,0,0.3)] active:cursor-grabbing"
          >
             →
          </motion.div>
