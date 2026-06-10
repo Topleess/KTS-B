@@ -51,6 +51,9 @@ jobs:
       - name: Test backend
         run: cd backend && pytest
 
+      - name: Prepare Compose env
+        run: cp .env.example.server .env
+
       - name: Validate Compose
         run: docker compose config --quiet
 
